@@ -111,6 +111,18 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .err { font-size: 12px; color: #c0392b; margin-top: -12px; margin-bottom: 14px; padding: 0 4px; }
 
+    /* Currency toggle */
+    .currency-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .currency-btn {
+      padding: 10px 8px; font-size: clamp(13px, 3.5vw, 14px); font-weight: 500; font-family: 'Noto Sans TC', sans-serif;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--surface); color: var(--muted); cursor: pointer; text-align: center;
+      transition: all 0.15s;
+    }
+    .currency-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .currency-btn:active { transform: scale(0.97); }
+    .currency-btn span { display: block; font-size: 11px; font-family: 'DM Mono', monospace; margin-top: 3px; opacity: 0.7; }
+
     /* Ship toggle */
     .ship-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
     .ship-btn {
@@ -192,6 +204,7 @@
       .rate-btn { width: 100%; text-align: center; }
       .param-row { flex-wrap: wrap; }
       .param-row label { width: 100%; }
+      .currency-toggle { grid-template-columns: 1fr 1fr; }
     }
 
     /* Landscape phone */
@@ -225,17 +238,27 @@
   <div class="header">
     <div class="header-inner">
       <h1>韓國代購試算 🛍</h1>
-      <p>含即時 KRW/TWD 匯率・支援離線使用</p>
+      <p>含即時匯率（KRW・USD）・支援離線使用</p>
     </div>
   </div>
 
   <div class="content">
     <div class="offline-badge" id="offline-badge">⚠ 目前離線，匯率使用上次儲存值</div>
 
+    <div class="label">幣別</div>
+    <div class="currency-toggle">
+      <button class="currency-btn active" id="btn-krw" onclick="setCurrency('KRW')">
+        🇰🇷 韓幣<span>₩ KRW</span>
+      </button>
+      <button class="currency-btn" id="btn-usd" onclick="setCurrency('USD')">
+        🇺🇸 美金<span>$ USD</span>
+      </button>
+    </div>
+
     <div class="krw-wrap">
-      <div class="label">韓幣售價</div>
+      <div class="label" id="price-label">韓幣售價</div>
       <div class="krw-input-row">
-        <span class="krw-symbol">₩</span>
+        <span class="krw-symbol" id="currency-symbol">₩</span>
         <input type="number" id="krw" placeholder="0" min="0" step="100" inputmode="numeric" oninput="calc()" />
       </div>
     </div>
@@ -266,7 +289,7 @@
       <div class="result-card main">
         <div class="rlabel">台灣到手價</div>
         <div class="rval" id="res-tw">—</div>
-        <div class="rsub" id="res-tw-sub">輸入韓幣後顯示</div>
+        <div class="rsub" id="res-tw-sub">輸入金額後顯示</div>
       </div>
       <div class="result-card">
         <div class="rlabel">換算新台幣</div>
@@ -277,7 +300,7 @@
 
     <div class="label">費用明細</div>
     <div class="breakdown">
-      <div class="brow"><span class="bn">韓幣換台幣</span><span class="bv" id="bd1">—</span></div>
+      <div class="brow"><span class="bn" id="bd1-label">韓幣換台幣</span><span class="bv" id="bd1">—</span></div>
       <div class="brow"><span class="bn">國際運費</span><span class="bv" id="bd2">—</span></div>
       <div class="brow"><span class="bn">代購費</span><span class="bv" id="bd3">—</span></div>
       <div class="brow"><span class="bn">開發票（×1.05）後</span><span class="bv" id="bd5">—</span></div>
@@ -334,6 +357,12 @@
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
 
+    // Currency config
+    const CURRENCY_CONFIG = {
+      KRW: { symbol: '₩', label: '韓幣售價', step: '100', defaultRate: 40, rateLabel: '匯率（₩幾元 = NT$1）', rateUnit: 'KRW', apiKey: 'KRW' },
+      USD: { symbol: '$', label: '美金售價', step: '0.01', defaultRate: 32, rateLabel: '匯率（US$1 = NT$幾元）', rateUnit: 'TWD', apiKey: 'USD' }
+    };
+
     // Load saved params
     const KEYS = ['rate', 'intl', 'proxy', 'invoice'];
     KEYS.forEach(k => {
@@ -345,10 +374,42 @@
     setShip(shipFee, true);
 
     let liveRate = false;
+    let currency = localStorage.getItem('pc_currency') || 'KRW';
+    setCurrency(currency, true);
 
     function saveParams() {
       KEYS.forEach(k => localStorage.setItem('pc_' + k, document.getElementById(k).value));
       localStorage.setItem('pc_ship', shipFee);
+      localStorage.setItem('pc_rate_' + currency, document.getElementById('rate').value);
+    }
+
+    function setCurrency(c, init) {
+      currency = c;
+      const cfg = CURRENCY_CONFIG[c];
+      document.getElementById('btn-krw').className = 'currency-btn' + (c === 'KRW' ? ' active' : '');
+      document.getElementById('btn-usd').className = 'currency-btn' + (c === 'USD' ? ' active' : '');
+      document.getElementById('currency-symbol').textContent = cfg.symbol;
+      document.getElementById('price-label').textContent = cfg.label;
+      document.getElementById('krw').step = cfg.step;
+
+      // Update rate param label
+      const rateRow = document.getElementById('rate').closest('.param-row');
+      if (rateRow) {
+        rateRow.querySelector('label').textContent = cfg.rateLabel;
+        rateRow.querySelector('.param-unit').textContent = cfg.rateUnit;
+      }
+
+      // Load saved rate for this currency, or use default
+      const savedRate = localStorage.getItem('pc_rate_' + c);
+      document.getElementById('rate').value = savedRate || cfg.defaultRate;
+
+      // Update breakdown label
+      document.getElementById('bd1-label').textContent = c === 'KRW' ? '韓幣換台幣' : '美金換台幣';
+
+      liveRate = false;
+      localStorage.setItem('pc_currency', c);
+      document.getElementById('rate-time').textContent = '使用預設值・點右方取得即時匯率';
+      if (!init) { updateRateDisplay(); calc(); }
     }
 
     function setShip(v, init) {
@@ -373,10 +434,17 @@
     }
 
     function updateRateDisplay() {
-      const rate = parseFloat(document.getElementById('rate').value) || 40;
-      document.getElementById('rate-display').textContent = liveRate
-        ? `₩1 = NT$${(1 / rate).toFixed(4)}（即時）`
-        : `₩${rate.toFixed(1)} = NT$1`;
+      const cfg = CURRENCY_CONFIG[currency];
+      const rate = parseFloat(document.getElementById('rate').value) || cfg.defaultRate;
+      if (currency === 'KRW') {
+        document.getElementById('rate-display').textContent = liveRate
+          ? `₩1 = NT$${(1 / rate).toFixed(4)}（即時）`
+          : `₩${rate.toFixed(1)} = NT$1`;
+      } else {
+        document.getElementById('rate-display').textContent = liveRate
+          ? `US$1 = NT$${rate.toFixed(2)}（即時）`
+          : `US$1 = NT$${rate.toFixed(1)}`;
+      }
     }
 
     async function fetchRate() {
@@ -392,12 +460,21 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         if (data.result !== 'success') throw new Error('API 錯誤');
-        const krw = data.rates['KRW'];
-        if (!krw) throw new Error('找不到 KRW');
 
-        document.getElementById('rate').value = krw.toFixed(1);
+        let rateVal;
+        if (currency === 'KRW') {
+          const krw = data.rates['KRW'];
+          if (!krw) throw new Error('找不到 KRW');
+          rateVal = krw.toFixed(1);
+        } else {
+          const usd = data.rates['USD'];
+          if (!usd) throw new Error('找不到 USD');
+          rateVal = (1 / usd).toFixed(2);
+        }
+
+        document.getElementById('rate').value = rateVal;
         liveRate = true;
-        localStorage.setItem('pc_rate', krw.toFixed(1));
+        localStorage.setItem('pc_rate_' + currency, rateVal);
 
         const t = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
         document.getElementById('rate-time').textContent = `來源：open.er-api.com・${t} 更新`;
@@ -415,8 +492,9 @@
     function fmt(n) { return 'NT$' + Math.round(n).toLocaleString('zh-TW'); }
 
     function calc() {
-      const krw = parseFloat(document.getElementById('krw').value) || 0;
-      const rate = parseFloat(document.getElementById('rate').value) || 40;
+      const cfg = CURRENCY_CONFIG[currency];
+      const amount = parseFloat(document.getElementById('krw').value) || 0;
+      const rate = parseFloat(document.getElementById('rate').value) || cfg.defaultRate;
       const intl = parseFloat(document.getElementById('intl').value) || 100;
       const proxy = parseFloat(document.getElementById('proxy').value) || 50;
       const invoice = parseFloat(document.getElementById('invoice').value) || 1.05;
@@ -425,17 +503,19 @@
       updateRateDisplay();
 
       const dash = '—';
-      if (!krw) {
+      if (!amount) {
         ['bd1','bd2','bd3','bd5','bd6','bd-total'].forEach(id => {
           document.getElementById(id).textContent = dash;
         });
         document.getElementById('res-tw').textContent = dash;
         document.getElementById('res-ntd').textContent = dash;
-        document.getElementById('res-tw-sub').textContent = '輸入韓幣後顯示';
+        document.getElementById('res-tw-sub').textContent = '輸入金額後顯示';
         return;
       }
 
-      const twd = krw / rate;
+      // KRW: twd = amount / rate (rate = KRW per TWD)
+      // USD: twd = amount * rate (rate = TWD per USD)
+      const twd = currency === 'KRW' ? amount / rate : amount * rate;
       const subtotal = twd + intl + proxy;
       const afterInv = subtotal * invoice;
       const total = afterInv + shipFee;
@@ -449,7 +529,11 @@
 
       document.getElementById('res-tw').textContent = fmt(total);
       document.getElementById('res-ntd').textContent = fmt(total);
-      document.getElementById('res-tw-sub').textContent = `≈ ₩${Math.round(krw).toLocaleString('zh-TW')}`;
+      const sym = cfg.symbol;
+      const displayAmt = currency === 'KRW'
+        ? `${sym}${Math.round(amount).toLocaleString('zh-TW')}`
+        : `${sym}${amount.toLocaleString('zh-TW')}`;
+      document.getElementById('res-tw-sub').textContent = `≈ ${displayAmt}`;
     }
 
     updateRateDisplay();
