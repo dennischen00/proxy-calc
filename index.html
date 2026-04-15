@@ -29,7 +29,16 @@
       --green-light: #e8f5ee;
       --radius: 14px;
       --radius-sm: 8px;
+      --content-max: 480px;
+      --gutter: 16px;
     }
+    @media (min-width: 600px) {
+      :root { --content-max: 540px; --gutter: 24px; }
+    }
+    @media (min-width: 900px) {
+      :root { --content-max: 600px; --gutter: 32px; }
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html { background: var(--bg); }
     body {
@@ -37,6 +46,7 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      min-height: 100dvh;
       padding-bottom: env(safe-area-inset-bottom);
     }
 
@@ -50,23 +60,29 @@
       top: 0;
       z-index: 10;
     }
-    .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.02em; }
-    .header p { font-size: 12px; color: #a09d97; margin-top: 2px; }
+    .header-inner { max-width: var(--content-max); margin: 0 auto; }
+    .header h1 { font-size: clamp(17px, 4vw, 20px); font-weight: 700; letter-spacing: 0.02em; }
+    .header p { font-size: clamp(11px, 2.5vw, 13px); color: #a09d97; margin-top: 2px; }
 
     /* Content */
-    .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+    .content { padding: 20px var(--gutter); max-width: var(--content-max); margin: 0 auto; }
 
     /* Section label */
     .label { font-size: 11px; font-weight: 700; color: var(--hint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
 
     /* KRW Input */
     .krw-wrap { margin-bottom: 20px; }
-    .krw-input-row { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 16px; transition: border-color 0.15s; }
-    .krw-input-row:focus-within { border-color: var(--text); }
-    .krw-symbol { font-family: 'DM Mono', monospace; font-size: 22px; color: var(--hint); }
+    .krw-input-row {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 14px 16px;
+      transition: border-color 0.15s;
+    }
+    .krw-input-row:focus-within { border-color: var(--text); box-shadow: 0 0 0 3px rgba(26,26,26,0.06); }
+    .krw-symbol { font-family: 'DM Mono', monospace; font-size: clamp(20px, 5vw, 24px); color: var(--hint); flex-shrink: 0; }
     .krw-input-row input {
-      flex: 1; border: none; background: transparent; font-family: 'DM Mono', monospace;
-      font-size: 28px; font-weight: 500; color: var(--text); text-align: right; outline: none;
+      flex: 1; min-width: 0; border: none; background: transparent; font-family: 'DM Mono', monospace;
+      font-size: clamp(24px, 7vw, 32px); font-weight: 500; color: var(--text); text-align: right; outline: none;
       -moz-appearance: textfield;
     }
     .krw-input-row input::-webkit-outer-spin-button,
@@ -77,15 +93,16 @@
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 12px 14px;
       display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-    .rate-info { flex: 1; }
-    .rate-val { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--text); }
+    .rate-info { flex: 1; min-width: 150px; }
+    .rate-val { font-family: 'DM Mono', monospace; font-size: clamp(13px, 3.5vw, 15px); font-weight: 500; color: var(--text); }
     .rate-meta { font-size: 11px; color: var(--hint); margin-top: 2px; }
     .rate-btn {
       padding: 8px 14px; font-size: 13px; font-family: 'Noto Sans TC', sans-serif;
       font-weight: 500; border: 1px solid var(--border); border-radius: var(--radius-sm);
       background: var(--bg); color: var(--text); cursor: pointer; white-space: nowrap;
-      transition: background 0.15s;
+      transition: background 0.15s, transform 0.1s;
     }
     .rate-btn:hover { background: var(--surface2); }
     .rate-btn:active { transform: scale(0.97); }
@@ -97,21 +114,30 @@
     /* Ship toggle */
     .ship-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
     .ship-btn {
-      padding: 11px 8px; font-size: 13px; font-weight: 500; font-family: 'Noto Sans TC', sans-serif;
+      padding: 12px 8px; font-size: clamp(13px, 3.5vw, 14px); font-weight: 500; font-family: 'Noto Sans TC', sans-serif;
       border: 1.5px solid var(--border); border-radius: var(--radius-sm);
       background: var(--surface); color: var(--muted); cursor: pointer; text-align: center;
       transition: all 0.15s;
     }
     .ship-btn.active { background: var(--text); border-color: var(--text); color: var(--bg); }
-    .ship-btn span { display: block; font-size: 11px; font-family: 'DM Mono', monospace; margin-top: 2px; opacity: 0.7; }
+    .ship-btn:active { transform: scale(0.97); }
+    .ship-btn span { display: block; font-size: 11px; font-family: 'DM Mono', monospace; margin-top: 3px; opacity: 0.7; }
 
     /* Results */
     .results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+    .result-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: clamp(12px, 3vw, 18px) clamp(14px, 3.5vw, 20px);
+    }
     .result-card.main { background: var(--text); border-color: var(--text); }
     .result-card .rlabel { font-size: 11px; color: var(--hint); font-weight: 500; margin-bottom: 6px; }
     .result-card.main .rlabel { color: #a09d97; }
-    .result-card .rval { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500; color: var(--text); }
+    .result-card .rval {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(20px, 5.5vw, 28px);
+      font-weight: 500; color: var(--text);
+      word-break: break-all;
+    }
     .result-card.main .rval { color: var(--bg); }
     .result-card .rsub { font-size: 11px; color: var(--hint); margin-top: 3px; }
     .result-card.main .rsub { color: #6b6860; }
@@ -134,32 +160,73 @@
     }
     .params-toggle .arrow { font-size: 10px; transition: transform 0.2s; }
     .params-toggle.open .arrow { transform: rotate(90deg); }
-    .params-section { display: none; }
-    .params-section.open { display: block; }
+    .params-section {
+      display: grid; grid-template-rows: 0fr;
+      transition: grid-template-rows 0.25s ease;
+    }
+    .params-section > .params-inner { overflow: hidden; }
+    .params-section.open { grid-template-rows: 1fr; }
     .param-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
     .param-group-label { font-size: 11px; font-weight: 700; color: var(--hint); text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 16px 8px; background: var(--surface2); border-bottom: 1px solid var(--border); }
     .param-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
     .param-row:last-child { border-bottom: none; }
-    .param-row label { flex: 1; font-size: 13px; color: var(--muted); }
+    .param-row label { flex: 1; font-size: 13px; color: var(--muted); min-width: 0; }
     .param-row input {
       width: 100px; text-align: right; font-family: 'DM Mono', monospace; font-size: 14px;
       padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-      background: var(--bg); color: var(--text); outline: none;
+      background: var(--bg); color: var(--text); outline: none; flex-shrink: 0;
       -moz-appearance: textfield;
     }
     .param-row input::-webkit-outer-spin-button,
     .param-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
     .param-row input:focus { border-color: var(--text); }
-    .param-unit { font-size: 12px; color: var(--hint); width: 30px; }
+    .param-unit { font-size: 12px; color: var(--hint); width: 30px; flex-shrink: 0; }
 
     /* Offline badge */
-    .offline-badge { display: none; font-size: 11px; background: #fff3cd; color: #856404; border-radius: 4px; padding: 4px 8px; margin-bottom: 12px; }
+    .offline-badge { display: none; font-size: 11px; background: #fff3cd; color: #856404; border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px; }
+
+    /* Small phones (< 360px) */
+    @media (max-width: 359px) {
+      .results { grid-template-columns: 1fr; }
+      .rate-bar { flex-direction: column; align-items: stretch; }
+      .rate-btn { width: 100%; text-align: center; }
+      .param-row { flex-wrap: wrap; }
+      .param-row label { width: 100%; }
+    }
+
+    /* Landscape phone */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .header { position: relative; padding: 10px 20px 8px; }
+      .header h1 { font-size: 16px; }
+      .header p { display: none; }
+      .content { padding-top: 12px; }
+    }
+
+    /* Tablet+ */
+    @media (min-width: 600px) {
+      .results { gap: 14px; }
+      .result-card .rval { font-size: 28px; }
+      .brow { padding: 13px 20px; }
+      .brow .bn { font-size: 14px; }
+      .brow .bv { font-size: 14px; }
+      .brow.total .bn { font-size: 15px; }
+      .brow.total .bv { font-size: 16px; }
+      .ship-btn { padding: 14px 8px; }
+    }
+
+    /* Desktop */
+    @media (min-width: 900px) {
+      .header { padding: 20px 32px 16px; }
+      .content { padding: 28px var(--gutter); }
+    }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>韓國代購試算 🛍</h1>
-    <p>含即時 KRW/TWD 匯率・支援離線使用</p>
+    <div class="header-inner">
+      <h1>韓國代購試算 🛍</h1>
+      <p>含即時 KRW/TWD 匯率・支援離線使用</p>
+    </div>
   </div>
 
   <div class="content">
@@ -222,6 +289,7 @@
       <span class="arrow">▶</span> 調整參數（匯率 / 費用）
     </button>
     <div class="params-section" id="params-section">
+      <div class="params-inner">
       <div class="param-card">
         <div class="param-group-label">偶爾變動</div>
         <div class="param-row">
@@ -247,6 +315,7 @@
           <input type="number" id="invoice" value="1.05" min="1" step="0.01" oninput="calc()" />
           <span class="param-unit">×</span>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -292,8 +361,8 @@
     function toggleParams() {
       const s = document.getElementById('params-section');
       const t = document.getElementById('params-toggle');
-      const open = s.classList.toggle('open');
-      t.className = 'params-toggle' + (open ? ' open' : '');
+      s.classList.toggle('open');
+      t.classList.toggle('open');
     }
 
     function onRateManual() {
