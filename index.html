@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>韓國代購試算</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a1a1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="代購試算" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f2eb;
+      --surface: #fffef9;
+      --surface2: #efece4;
+      --border: #d8d4c8;
+      --text: #1a1a1a;
+      --muted: #6b6860;
+      --hint: #a09d97;
+      --accent: #c8440a;
+      --accent-light: #fdf0ea;
+      --accent-border: #e8a07a;
+      --blue: #1a4fa0;
+      --blue-light: #eaf0fb;
+      --green: #1a6b3a;
+      --green-light: #e8f5ee;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { background: var(--bg); }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Header */
+    .header {
+      background: var(--text);
+      color: var(--bg);
+      padding: 16px 20px 14px;
+      padding-top: calc(16px + env(safe-area-inset-top));
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.02em; }
+    .header p { font-size: 12px; color: #a09d97; margin-top: 2px; }
+
+    /* Content */
+    .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+
+    /* Section label */
+    .label { font-size: 11px; font-weight: 700; color: var(--hint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+
+    /* KRW Input */
+    .krw-wrap { margin-bottom: 20px; }
+    .krw-input-row { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 16px; transition: border-color 0.15s; }
+    .krw-input-row:focus-within { border-color: var(--text); }
+    .krw-symbol { font-family: 'DM Mono', monospace; font-size: 22px; color: var(--hint); }
+    .krw-input-row input {
+      flex: 1; border: none; background: transparent; font-family: 'DM Mono', monospace;
+      font-size: 28px; font-weight: 500; color: var(--text); text-align: right; outline: none;
+      -moz-appearance: textfield;
+    }
+    .krw-input-row input::-webkit-outer-spin-button,
+    .krw-input-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    /* Rate bar */
+    .rate-bar {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+    }
+    .rate-info { flex: 1; }
+    .rate-val { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--text); }
+    .rate-meta { font-size: 11px; color: var(--hint); margin-top: 2px; }
+    .rate-btn {
+      padding: 8px 14px; font-size: 13px; font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text); cursor: pointer; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .rate-btn:hover { background: var(--surface2); }
+    .rate-btn:active { transform: scale(0.97); }
+    .rate-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .spin { display: inline-block; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .err { font-size: 12px; color: #c0392b; margin-top: -12px; margin-bottom: 14px; padding: 0 4px; }
+
+    /* Ship toggle */
+    .ship-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .ship-btn {
+      padding: 11px 8px; font-size: 13px; font-weight: 500; font-family: 'Noto Sans TC', sans-serif;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--surface); color: var(--muted); cursor: pointer; text-align: center;
+      transition: all 0.15s;
+    }
+    .ship-btn.active { background: var(--text); border-color: var(--text); color: var(--bg); }
+    .ship-btn span { display: block; font-size: 11px; font-family: 'DM Mono', monospace; margin-top: 2px; opacity: 0.7; }
+
+    /* Results */
+    .results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+    .result-card.main { background: var(--text); border-color: var(--text); }
+    .result-card .rlabel { font-size: 11px; color: var(--hint); font-weight: 500; margin-bottom: 6px; }
+    .result-card.main .rlabel { color: #a09d97; }
+    .result-card .rval { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500; color: var(--text); }
+    .result-card.main .rval { color: var(--bg); }
+    .result-card .rsub { font-size: 11px; color: var(--hint); margin-top: 3px; }
+    .result-card.main .rsub { color: #6b6860; }
+
+    /* Breakdown */
+    .breakdown { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+    .brow { display: flex; justify-content: space-between; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--border); }
+    .brow:last-child { border-bottom: none; }
+    .brow.total { background: var(--surface2); }
+    .brow .bn { font-size: 13px; color: var(--muted); }
+    .brow .bv { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); }
+    .brow.total .bn { font-weight: 700; color: var(--text); font-size: 14px; }
+    .brow.total .bv { font-size: 15px; color: var(--accent); }
+
+    /* Params */
+    .params-toggle {
+      display: flex; align-items: center; gap: 8px; padding: 12px 0;
+      font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; border: none;
+      background: none; width: 100%; font-family: 'Noto Sans TC', sans-serif;
+    }
+    .params-toggle .arrow { font-size: 10px; transition: transform 0.2s; }
+    .params-toggle.open .arrow { transform: rotate(90deg); }
+    .params-section { display: none; }
+    .params-section.open { display: block; }
+    .param-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+    .param-group-label { font-size: 11px; font-weight: 700; color: var(--hint); text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 16px 8px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+    .param-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .param-row:last-child { border-bottom: none; }
+    .param-row label { flex: 1; font-size: 13px; color: var(--muted); }
+    .param-row input {
+      width: 100px; text-align: right; font-family: 'DM Mono', monospace; font-size: 14px;
+      padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text); outline: none;
+      -moz-appearance: textfield;
+    }
+    .param-row input::-webkit-outer-spin-button,
+    .param-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .param-row input:focus { border-color: var(--text); }
+    .param-unit { font-size: 12px; color: var(--hint); width: 30px; }
+
+    /* Offline badge */
+    .offline-badge { display: none; font-size: 11px; background: #fff3cd; color: #856404; border-radius: 4px; padding: 4px 8px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>韓國代購試算 🛍</h1>
+    <p>含即時 KRW/TWD 匯率・支援離線使用</p>
+  </div>
+
+  <div class="content">
+    <div class="offline-badge" id="offline-badge">⚠ 目前離線，匯率使用上次儲存值</div>
+
+    <div class="krw-wrap">
+      <div class="label">韓幣售價</div>
+      <div class="krw-input-row">
+        <span class="krw-symbol">₩</span>
+        <input type="number" id="krw" placeholder="0" min="0" step="100" inputmode="numeric" oninput="calc()" />
+      </div>
+    </div>
+
+    <div class="rate-bar">
+      <div class="rate-info">
+        <div class="rate-val" id="rate-display">₩40 = NT$1</div>
+        <div class="rate-meta" id="rate-time">使用預設值・點右方取得即時匯率</div>
+      </div>
+      <button class="rate-btn" id="fetch-btn" onclick="fetchRate()">
+        <span id="fetch-icon">↻</span> 即時匯率
+      </button>
+    </div>
+    <div class="err" id="err-msg"></div>
+
+    <div class="label">台灣運費方案</div>
+    <div class="ship-toggle">
+      <button class="ship-btn active" id="btn70" onclick="setShip(70)">
+        普通運費<span>NT$70</span>
+      </button>
+      <button class="ship-btn" id="btn30" onclick="setShip(30)">
+        優惠運費<span>NT$30</span>
+      </button>
+    </div>
+
+    <div class="label">計算結果</div>
+    <div class="results">
+      <div class="result-card main">
+        <div class="rlabel">台灣到手價</div>
+        <div class="rval" id="res-tw">—</div>
+        <div class="rsub" id="res-tw-sub">輸入韓幣後顯示</div>
+      </div>
+      <div class="result-card">
+        <div class="rlabel">換算新台幣</div>
+        <div class="rval" id="res-ntd">—</div>
+        <div class="rsub">含稅含運</div>
+      </div>
+    </div>
+
+    <div class="label">費用明細</div>
+    <div class="breakdown">
+      <div class="brow"><span class="bn">韓幣換台幣</span><span class="bv" id="bd1">—</span></div>
+      <div class="brow"><span class="bn">國際運費</span><span class="bv" id="bd2">—</span></div>
+      <div class="brow"><span class="bn">代購費</span><span class="bv" id="bd3">—</span></div>
+      <div class="brow"><span class="bn">開發票（×1.05）後</span><span class="bv" id="bd5">—</span></div>
+      <div class="brow"><span class="bn">台灣運費</span><span class="bv" id="bd6">—</span></div>
+      <div class="brow total"><span class="bn">合計</span><span class="bv" id="bd-total">—</span></div>
+    </div>
+
+    <button class="params-toggle" id="params-toggle" onclick="toggleParams()">
+      <span class="arrow">▶</span> 調整參數（匯率 / 費用）
+    </button>
+    <div class="params-section" id="params-section">
+      <div class="param-card">
+        <div class="param-group-label">偶爾變動</div>
+        <div class="param-row">
+          <label>匯率（₩幾元 = NT$1）</label>
+          <input type="number" id="rate" value="40" min="1" step="0.5" oninput="onRateManual()" />
+          <span class="param-unit">KRW</span>
+        </div>
+        <div class="param-row">
+          <label>國際運費</label>
+          <input type="number" id="intl" value="100" min="0" step="10" oninput="calc()" />
+          <span class="param-unit">TWD</span>
+        </div>
+      </div>
+      <div class="param-card">
+        <div class="param-group-label">固定費用</div>
+        <div class="param-row">
+          <label>代購費</label>
+          <input type="number" id="proxy" value="50" min="0" step="5" oninput="calc()" />
+          <span class="param-unit">TWD</span>
+        </div>
+        <div class="param-row">
+          <label>開發票加成</label>
+          <input type="number" id="invoice" value="1.05" min="1" step="0.01" oninput="calc()" />
+          <span class="param-unit">×</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+
+    // Offline detection
+    function updateOnlineStatus() {
+      document.getElementById('offline-badge').style.display = navigator.onLine ? 'none' : 'block';
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // Load saved params
+    const KEYS = ['rate', 'intl', 'proxy', 'invoice'];
+    KEYS.forEach(k => {
+      const v = localStorage.getItem('pc_' + k);
+      if (v) document.getElementById(k).value = v;
+    });
+    const savedShip = localStorage.getItem('pc_ship');
+    let shipFee = savedShip ? parseInt(savedShip) : 70;
+    setShip(shipFee, true);
+
+    let liveRate = false;
+
+    function saveParams() {
+      KEYS.forEach(k => localStorage.setItem('pc_' + k, document.getElementById(k).value));
+      localStorage.setItem('pc_ship', shipFee);
+    }
+
+    function setShip(v, init) {
+      shipFee = v;
+      document.getElementById('btn70').className = 'ship-btn' + (v === 70 ? ' active' : '');
+      document.getElementById('btn30').className = 'ship-btn' + (v === 30 ? ' active' : '');
+      if (!init) { saveParams(); calc(); }
+    }
+
+    function toggleParams() {
+      const s = document.getElementById('params-section');
+      const t = document.getElementById('params-toggle');
+      const open = s.classList.toggle('open');
+      t.className = 'params-toggle' + (open ? ' open' : '');
+    }
+
+    function onRateManual() {
+      liveRate = false;
+      updateRateDisplay();
+      saveParams();
+      calc();
+    }
+
+    function updateRateDisplay() {
+      const rate = parseFloat(document.getElementById('rate').value) || 40;
+      document.getElementById('rate-display').textContent = liveRate
+        ? `₩1 = NT$${(1 / rate).toFixed(4)}（即時）`
+        : `₩${rate.toFixed(1)} = NT$1`;
+    }
+
+    async function fetchRate() {
+      const btn = document.getElementById('fetch-btn');
+      const icon = document.getElementById('fetch-icon');
+      const err = document.getElementById('err-msg');
+      btn.disabled = true;
+      icon.className = 'spin';
+      err.textContent = '';
+
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/TWD');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (data.result !== 'success') throw new Error('API 錯誤');
+        const krw = data.rates['KRW'];
+        if (!krw) throw new Error('找不到 KRW');
+
+        document.getElementById('rate').value = krw.toFixed(1);
+        liveRate = true;
+        localStorage.setItem('pc_rate', krw.toFixed(1));
+
+        const t = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('rate-time').textContent = `來源：open.er-api.com・${t} 更新`;
+        updateRateDisplay();
+        calc();
+      } catch (e) {
+        err.textContent = '無法取得即時匯率：' + e.message;
+      } finally {
+        btn.disabled = false;
+        icon.className = '';
+        icon.textContent = '↻';
+      }
+    }
+
+    function fmt(n) { return 'NT$' + Math.round(n).toLocaleString('zh-TW'); }
+
+    function calc() {
+      const krw = parseFloat(document.getElementById('krw').value) || 0;
+      const rate = parseFloat(document.getElementById('rate').value) || 40;
+      const intl = parseFloat(document.getElementById('intl').value) || 100;
+      const proxy = parseFloat(document.getElementById('proxy').value) || 50;
+      const invoice = parseFloat(document.getElementById('invoice').value) || 1.05;
+
+      saveParams();
+      updateRateDisplay();
+
+      const dash = '—';
+      if (!krw) {
+        ['bd1','bd2','bd3','bd5','bd6','bd-total'].forEach(id => {
+          document.getElementById(id).textContent = dash;
+        });
+        document.getElementById('res-tw').textContent = dash;
+        document.getElementById('res-ntd').textContent = dash;
+        document.getElementById('res-tw-sub').textContent = '輸入韓幣後顯示';
+        return;
+      }
+
+      const twd = krw / rate;
+      const subtotal = twd + intl + proxy;
+      const afterInv = subtotal * invoice;
+      const total = afterInv + shipFee;
+
+      document.getElementById('bd1').textContent = fmt(twd);
+      document.getElementById('bd2').textContent = fmt(intl);
+      document.getElementById('bd3').textContent = fmt(proxy);
+      document.getElementById('bd5').textContent = fmt(afterInv);
+      document.getElementById('bd6').textContent = fmt(shipFee);
+      document.getElementById('bd-total').textContent = fmt(total);
+
+      document.getElementById('res-tw').textContent = fmt(total);
+      document.getElementById('res-ntd').textContent = fmt(total);
+      document.getElementById('res-tw-sub').textContent = `≈ ₩${Math.round(krw).toLocaleString('zh-TW')}`;
+    }
+
+    updateRateDisplay();
+    calc();
+  </script>
+</body>
+</html>

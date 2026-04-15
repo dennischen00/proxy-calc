@@ -1,0 +1,14 @@
+{
+  "name": "韓國代購試算",
+  "short_name": "代購試算",
+  "description": "韓幣代購價格計算，含即時匯率",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f2eb",
+  "theme_color": "#1a1a1a",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
