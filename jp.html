@@ -3,30 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>韓國代購試算</title>
-  <link rel="manifest" href="manifest.json" />
+  <title>日本代購試算</title>
   <meta name="theme-color" content="#1a1a1a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="代購試算" />
+  <meta name="apple-mobile-web-app-title" content="日本代購" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f5f2eb;
-      --surface: #fffef9;
-      --surface2: #efece4;
-      --border: #d8d4c8;
+      --bg: #fbf4f3;
+      --surface: #fffdfb;
+      --surface2: #f3eae7;
+      --border: #e0cfcb;
       --text: #1a1a1a;
       --muted: #6b6860;
       --hint: #a09d97;
-      --accent: #c8440a;
-      --accent-light: #fdf0ea;
-      --accent-border: #e8a07a;
-      --blue: #1a4fa0;
-      --blue-light: #eaf0fb;
-      --green: #1a6b3a;
-      --green-light: #e8f5ee;
+      --accent: #c62828;
+      --accent-light: #fdecec;
+      --accent-border: #e8a0a0;
       --radius: 14px;
       --radius-sm: 8px;
       --content-max: 480px;
@@ -50,7 +45,6 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* Header */
     .header {
       background: var(--text);
       color: var(--bg);
@@ -64,13 +58,10 @@
     .header h1 { font-size: clamp(17px, 4vw, 20px); font-weight: 700; letter-spacing: 0.02em; }
     .header p { font-size: clamp(11px, 2.5vw, 13px); color: #a09d97; margin-top: 2px; }
 
-    /* Content */
     .content { padding: 20px var(--gutter); max-width: var(--content-max); margin: 0 auto; }
 
-    /* Section label */
     .label { font-size: 11px; font-weight: 700; color: var(--hint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
 
-    /* KRW Input */
     .krw-wrap { margin-bottom: 20px; }
     .krw-input-row {
       display: flex; align-items: center; gap: 10px;
@@ -88,7 +79,6 @@
     .krw-input-row input::-webkit-outer-spin-button,
     .krw-input-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-    /* Rate bar */
     .rate-bar {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 12px 14px;
@@ -111,19 +101,6 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .err { font-size: 12px; color: #c0392b; margin-top: -12px; margin-bottom: 14px; padding: 0 4px; }
 
-    /* Currency toggle */
-    .currency-toggle { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .currency-btn {
-      padding: 10px 8px; font-size: clamp(13px, 3.5vw, 14px); font-weight: 500; font-family: 'Noto Sans TC', sans-serif;
-      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-      background: var(--surface); color: var(--muted); cursor: pointer; text-align: center;
-      transition: all 0.15s;
-    }
-    .currency-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
-    .currency-btn:active { transform: scale(0.97); }
-    .currency-btn span { display: block; font-size: 11px; font-family: 'DM Mono', monospace; margin-top: 3px; opacity: 0.7; }
-
-    /* Ship toggle */
     .ship-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
     .ship-btn {
       padding: 12px 8px; font-size: clamp(13px, 3.5vw, 14px); font-weight: 500; font-family: 'Noto Sans TC', sans-serif;
@@ -135,7 +112,6 @@
     .ship-btn:active { transform: scale(0.97); }
     .ship-btn span { display: block; font-size: 11px; font-family: 'DM Mono', monospace; margin-top: 3px; opacity: 0.7; }
 
-    /* Results */
     .results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
     .result-card {
       background: var(--surface); border: 1px solid var(--border);
@@ -154,7 +130,6 @@
     .result-card .rsub { font-size: 11px; color: var(--hint); margin-top: 3px; }
     .result-card.main .rsub { color: #6b6860; }
 
-    /* Breakdown */
     .breakdown { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
     .brow { display: flex; justify-content: space-between; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--border); }
     .brow:last-child { border-bottom: none; }
@@ -164,7 +139,6 @@
     .brow.total .bn { font-weight: 700; color: var(--text); font-size: 14px; }
     .brow.total .bv { font-size: 15px; color: var(--accent); }
 
-    /* Params */
     .params-toggle {
       display: flex; align-items: center; gap: 8px; padding: 12px 0;
       font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; border: none;
@@ -194,22 +168,16 @@
     .param-row input:focus { border-color: var(--text); }
     .param-unit { font-size: 12px; color: var(--hint); width: 30px; flex-shrink: 0; }
 
-    /* Offline badge */
     .offline-badge { display: none; font-size: 11px; background: #fff3cd; color: #856404; border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px; }
 
-    /* Small phones (< 360px) */
     @media (max-width: 359px) {
       .results { grid-template-columns: 1fr; }
       .rate-bar { flex-direction: column; align-items: stretch; }
       .rate-btn { width: 100%; text-align: center; }
       .param-row { flex-wrap: wrap; }
       .param-row label { width: 100%; }
-      .currency-toggle { grid-template-columns: 1fr 1fr 1fr; }
-      .currency-btn { padding: 8px 4px; font-size: 12px; }
-      .currency-btn span { font-size: 10px; }
     }
 
-    /* Landscape phone */
     @media (max-height: 500px) and (orientation: landscape) {
       .header { position: relative; padding: 10px 20px 8px; }
       .header h1 { font-size: 16px; }
@@ -217,7 +185,6 @@
       .content { padding-top: 12px; }
     }
 
-    /* Tablet+ */
     @media (min-width: 600px) {
       .results { gap: 14px; }
       .result-card .rval { font-size: 28px; }
@@ -229,7 +196,6 @@
       .ship-btn { padding: 14px 8px; }
     }
 
-    /* Desktop */
     @media (min-width: 900px) {
       .header { padding: 20px 32px 16px; }
       .content { padding: 28px var(--gutter); }
@@ -239,38 +205,25 @@
 <body>
   <div class="header">
     <div class="header-inner">
-      <h1>韓國代購試算 🛍</h1>
-      <p>含即時匯率（KRW・USD）・支援離線使用</p>
+      <h1>日本代購試算 🗾</h1>
+      <p>日幣・蝦皮上架版本</p>
     </div>
   </div>
 
   <div class="content">
     <div class="offline-badge" id="offline-badge">⚠ 目前離線，匯率使用上次儲存值</div>
 
-    <div class="label">幣別</div>
-    <div class="currency-toggle">
-      <button class="currency-btn active" id="btn-krw" onclick="setCurrency('KRW')">
-        🇰🇷 韓幣<span>₩ KRW</span>
-      </button>
-      <button class="currency-btn" id="btn-usd" onclick="setCurrency('USD')">
-        🇺🇸 美金<span>$ USD</span>
-      </button>
-      <button class="currency-btn" id="btn-thb" onclick="setCurrency('THB')">
-        🇹🇭 泰銖<span>฿ THB</span>
-      </button>
-    </div>
-
     <div class="krw-wrap">
-      <div class="label" id="price-label">韓幣售價</div>
+      <div class="label">日幣售價</div>
       <div class="krw-input-row">
-        <span class="krw-symbol" id="currency-symbol">₩</span>
-        <input type="number" id="krw" placeholder="0" min="0" step="100" inputmode="numeric" oninput="calc()" />
+        <span class="krw-symbol">¥</span>
+        <input type="number" id="jpy" placeholder="0" min="0" step="1" inputmode="numeric" oninput="calc()" />
       </div>
     </div>
 
     <div class="rate-bar">
       <div class="rate-info">
-        <div class="rate-val" id="rate-display">₩40 = NT$1</div>
+        <div class="rate-val" id="rate-display">¥1 = NT$0.210</div>
         <div class="rate-meta" id="rate-time">使用預設值・點右方取得即時匯率</div>
       </div>
       <button class="rate-btn" id="fetch-btn" onclick="fetchRate()">
@@ -279,69 +232,63 @@
     </div>
     <div class="err" id="err-msg"></div>
 
-    <div class="label">台灣運費方案</div>
+    <div class="label">攤提國際運費</div>
     <div class="ship-toggle">
-      <button class="ship-btn active" id="btn70" onclick="setShip(70)">
-        普通運費<span>NT$70</span>
+      <button class="ship-btn active" id="btn-light" onclick="setShip(50)">
+        輕的<span>NT$50</span>
       </button>
-      <button class="ship-btn" id="btn30" onclick="setShip(30)">
-        優惠運費<span>NT$30</span>
+      <button class="ship-btn" id="btn-heavy" onclick="setShip(150)">
+        重的<span>NT$150</span>
       </button>
     </div>
 
     <div class="label">計算結果</div>
     <div class="results">
       <div class="result-card main">
-        <div class="rlabel">台灣到手價</div>
-        <div class="rval" id="res-tw">—</div>
-        <div class="rsub" id="res-tw-sub">輸入金額後顯示</div>
+        <div class="rlabel">蝦皮上架價</div>
+        <div class="rval" id="res-total">—</div>
+        <div class="rsub" id="res-sub">輸入金額後顯示</div>
       </div>
       <div class="result-card">
-        <div class="rlabel">換算新台幣</div>
-        <div class="rval" id="res-ntd">—</div>
-        <div class="rsub">含稅含運</div>
+        <div class="rlabel">台幣本金</div>
+        <div class="rval" id="res-base">—</div>
+        <div class="rsub">日幣換算</div>
       </div>
     </div>
 
     <div class="label">費用明細</div>
     <div class="breakdown">
-      <div class="brow"><span class="bn" id="bd1-label">韓幣換台幣</span><span class="bv" id="bd1">—</span></div>
-      <div class="brow"><span class="bn">國際運費</span><span class="bv" id="bd2">—</span></div>
-      <div class="brow"><span class="bn">代購費</span><span class="bv" id="bd3">—</span></div>
-      <div class="brow"><span class="bn">開發票（×1.05）後</span><span class="bv" id="bd5">—</span></div>
-      <div class="brow"><span class="bn">台灣運費</span><span class="bv" id="bd6">—</span></div>
+      <div class="brow"><span class="bn">日幣換台幣</span><span class="bv" id="bd-base">—</span></div>
+      <div class="brow"><span class="bn" id="bd-proxy-label">代購費（10%）</span><span class="bv" id="bd-proxy">—</span></div>
+      <div class="brow"><span class="bn" id="bd-shopee-label">蝦皮手續費（20%）</span><span class="bv" id="bd-shopee">—</span></div>
+      <div class="brow"><span class="bn">攤提國際運費</span><span class="bv" id="bd-ship">—</span></div>
       <div class="brow total"><span class="bn">合計</span><span class="bv" id="bd-total">—</span></div>
     </div>
 
     <button class="params-toggle" id="params-toggle" onclick="toggleParams()">
-      <span class="arrow">▶</span> 調整參數（匯率 / 費用）
+      <span class="arrow">▶</span> 調整參數（匯率 / 費率）
     </button>
     <div class="params-section" id="params-section">
       <div class="params-inner">
       <div class="param-card">
         <div class="param-group-label">偶爾變動</div>
         <div class="param-row">
-          <label>匯率（₩幾元 = NT$1）</label>
-          <input type="number" id="rate" value="40" min="1" step="0.5" oninput="onRateManual()" />
-          <span class="param-unit">KRW</span>
-        </div>
-        <div class="param-row">
-          <label>國際運費</label>
-          <input type="number" id="intl" value="100" min="0" step="10" oninput="calc()" />
+          <label>匯率（¥1 = NT$?）</label>
+          <input type="number" id="rate" value="0.21" min="0.01" step="0.001" oninput="onRateManual()" />
           <span class="param-unit">TWD</span>
         </div>
       </div>
       <div class="param-card">
-        <div class="param-group-label">固定費用</div>
+        <div class="param-group-label">費率</div>
         <div class="param-row">
           <label>代購費</label>
-          <input type="number" id="proxy" value="50" min="0" step="5" oninput="calc()" />
-          <span class="param-unit">TWD</span>
+          <input type="number" id="proxy-pct" value="10" min="0" step="1" oninput="calc()" />
+          <span class="param-unit">%</span>
         </div>
         <div class="param-row">
-          <label>開發票加成</label>
-          <input type="number" id="invoice" value="1.05" min="1" step="0.01" oninput="calc()" />
-          <span class="param-unit">×</span>
+          <label>蝦皮手續費</label>
+          <input type="number" id="shopee-pct" value="20" min="0" step="1" oninput="calc()" />
+          <span class="param-unit">%</span>
         </div>
       </div>
       </div>
@@ -349,12 +296,10 @@
   </div>
 
   <script>
-    // PWA Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
 
-    // Offline detection
     function updateOnlineStatus() {
       document.getElementById('offline-badge').style.display = navigator.onLine ? 'none' : 'block';
     }
@@ -362,102 +307,46 @@
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
 
-    // Currency config
-    const CURRENCY_CONFIG = {
-      KRW: { symbol: '₩', label: '韓幣售價', step: '100', defaultRate: 40, rateLabel: '匯率（₩幾元 = NT$1）', rateUnit: 'KRW', apiKey: 'KRW' },
-      USD: { symbol: '$', label: '美金售價', step: '0.01', defaultRate: 32, rateLabel: '匯率（US$1 = NT$幾元）', rateUnit: 'TWD', apiKey: 'USD' },
-      THB: { symbol: '฿', label: '泰銖售價', step: '1', defaultRate: 1, rateLabel: '匯率（฿幾元 = NT$1）', rateUnit: 'THB', apiKey: 'THB' }
-    };
-
-    // Load saved params
-    const KEYS = ['rate', 'intl', 'proxy', 'invoice'];
+    const KEYS = ['rate', 'proxy-pct', 'shopee-pct'];
     KEYS.forEach(k => {
-      const v = localStorage.getItem('pc_' + k);
+      const v = localStorage.getItem('jp_' + k);
       if (v) document.getElementById(k).value = v;
     });
-    const savedShip = localStorage.getItem('pc_ship');
-    let shipFee = savedShip ? parseInt(savedShip) : 70;
+    const savedShip = localStorage.getItem('jp_ship');
+    let shipFee = savedShip ? parseInt(savedShip) : 50;
     setShip(shipFee, true);
 
     let liveRate = false;
-    let currency = localStorage.getItem('pc_currency') || 'KRW';
-    setCurrency(currency, true);
 
     function saveParams() {
-      KEYS.forEach(k => localStorage.setItem('pc_' + k, document.getElementById(k).value));
-      localStorage.setItem('pc_ship', shipFee);
-      localStorage.setItem('pc_rate_' + currency, document.getElementById('rate').value);
-    }
-
-    function setCurrency(c, init) {
-      currency = c;
-      const cfg = CURRENCY_CONFIG[c];
-      document.getElementById('btn-krw').className = 'currency-btn' + (c === 'KRW' ? ' active' : '');
-      document.getElementById('btn-usd').className = 'currency-btn' + (c === 'USD' ? ' active' : '');
-      document.getElementById('btn-thb').className = 'currency-btn' + (c === 'THB' ? ' active' : '');
-      document.getElementById('currency-symbol').textContent = cfg.symbol;
-      document.getElementById('price-label').textContent = cfg.label;
-      document.getElementById('krw').step = cfg.step;
-
-      // Update rate param label
-      const rateRow = document.getElementById('rate').closest('.param-row');
-      if (rateRow) {
-        rateRow.querySelector('label').textContent = cfg.rateLabel;
-        rateRow.querySelector('.param-unit').textContent = cfg.rateUnit;
-      }
-
-      // Load saved rate for this currency, or use default
-      const savedRate = localStorage.getItem('pc_rate_' + c);
-      document.getElementById('rate').value = savedRate || cfg.defaultRate;
-
-      // Update breakdown label
-      const bdLabels = { KRW: '韓幣換台幣', USD: '美金換台幣', THB: '泰銖換台幣' };
-      document.getElementById('bd1-label').textContent = bdLabels[c];
-
-      liveRate = false;
-      localStorage.setItem('pc_currency', c);
-      document.getElementById('rate-time').textContent = '使用預設值・點右方取得即時匯率';
-      if (!init) { updateRateDisplay(); calc(); }
+      KEYS.forEach(k => localStorage.setItem('jp_' + k, document.getElementById(k).value));
+      localStorage.setItem('jp_ship', shipFee);
     }
 
     function setShip(v, init) {
       shipFee = v;
-      document.getElementById('btn70').className = 'ship-btn' + (v === 70 ? ' active' : '');
-      document.getElementById('btn30').className = 'ship-btn' + (v === 30 ? ' active' : '');
+      document.getElementById('btn-light').className = 'ship-btn' + (v === 50 ? ' active' : '');
+      document.getElementById('btn-heavy').className = 'ship-btn' + (v === 150 ? ' active' : '');
       if (!init) { saveParams(); calc(); }
     }
 
     function toggleParams() {
-      const s = document.getElementById('params-section');
-      const t = document.getElementById('params-toggle');
-      s.classList.toggle('open');
-      t.classList.toggle('open');
+      document.getElementById('params-section').classList.toggle('open');
+      document.getElementById('params-toggle').classList.toggle('open');
     }
 
     function onRateManual() {
       liveRate = false;
+      document.getElementById('rate-time').textContent = '使用手動值';
       updateRateDisplay();
       saveParams();
       calc();
     }
 
     function updateRateDisplay() {
-      const cfg = CURRENCY_CONFIG[currency];
-      const rate = parseFloat(document.getElementById('rate').value) || cfg.defaultRate;
-      const el = document.getElementById('rate-display');
-      if (currency === 'KRW') {
-        el.textContent = liveRate
-          ? `₩1 = NT$${(1 / rate).toFixed(4)}（即時）`
-          : `₩${rate.toFixed(1)} = NT$1`;
-      } else if (currency === 'USD') {
-        el.textContent = liveRate
-          ? `US$1 = NT$${rate.toFixed(2)}（即時）`
-          : `US$1 = NT$${rate.toFixed(1)}`;
-      } else {
-        el.textContent = liveRate
-          ? `฿1 = NT$${(1 / rate).toFixed(3)}（即時）`
-          : `฿${rate.toFixed(2)} = NT$1`;
-      }
+      const rate = parseFloat(document.getElementById('rate').value) || 0.21;
+      document.getElementById('rate-display').textContent =
+        `¥1 = NT$${rate.toFixed(3)}${liveRate ? '（即時）' : ''}`;
     }
 
     async function fetchRate() {
@@ -474,24 +363,13 @@
         const data = await res.json();
         if (data.result !== 'success') throw new Error('API 錯誤');
 
-        let rateVal;
-        if (currency === 'KRW') {
-          const krw = data.rates['KRW'];
-          if (!krw) throw new Error('找不到 KRW');
-          rateVal = krw.toFixed(1);
-        } else if (currency === 'USD') {
-          const usd = data.rates['USD'];
-          if (!usd) throw new Error('找不到 USD');
-          rateVal = (1 / usd).toFixed(2);
-        } else {
-          const thb = data.rates['THB'];
-          if (!thb) throw new Error('找不到 THB');
-          rateVal = thb.toFixed(2);
-        }
+        const jpy = data.rates['JPY'];
+        if (!jpy) throw new Error('找不到 JPY');
+        const rateVal = (1 / jpy).toFixed(4);
 
         document.getElementById('rate').value = rateVal;
         liveRate = true;
-        localStorage.setItem('pc_rate_' + currency, rateVal);
+        localStorage.setItem('jp_rate', rateVal);
 
         const t = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
         document.getElementById('rate-time').textContent = `來源：open.er-api.com・${t} 更新`;
@@ -509,48 +387,40 @@
     function fmt(n) { return 'NT$' + Math.round(n).toLocaleString('zh-TW'); }
 
     function calc() {
-      const cfg = CURRENCY_CONFIG[currency];
-      const amount = parseFloat(document.getElementById('krw').value) || 0;
-      const rate = parseFloat(document.getElementById('rate').value) || cfg.defaultRate;
-      const intl = parseFloat(document.getElementById('intl').value) || 100;
-      const proxy = parseFloat(document.getElementById('proxy').value) || 50;
-      const invoice = parseFloat(document.getElementById('invoice').value) || 1.05;
+      const jpy = parseFloat(document.getElementById('jpy').value) || 0;
+      const rate = parseFloat(document.getElementById('rate').value) || 0.21;
+      const proxyPct = parseFloat(document.getElementById('proxy-pct').value) || 0;
+      const shopeePct = parseFloat(document.getElementById('shopee-pct').value) || 0;
 
       saveParams();
       updateRateDisplay();
 
+      document.getElementById('bd-proxy-label').textContent = `代購費（${proxyPct}%）`;
+      document.getElementById('bd-shopee-label').textContent = `蝦皮手續費（${shopeePct}%）`;
+
       const dash = '—';
-      if (!amount) {
-        ['bd1','bd2','bd3','bd5','bd6','bd-total'].forEach(id => {
+      if (!jpy) {
+        ['bd-base','bd-proxy','bd-shopee','bd-ship','bd-total','res-total','res-base'].forEach(id => {
           document.getElementById(id).textContent = dash;
         });
-        document.getElementById('res-tw').textContent = dash;
-        document.getElementById('res-ntd').textContent = dash;
-        document.getElementById('res-tw-sub').textContent = '輸入金額後顯示';
+        document.getElementById('res-sub').textContent = '輸入金額後顯示';
         return;
       }
 
-      // KRW / THB: twd = amount / rate (rate = foreign per TWD)
-      // USD: twd = amount * rate (rate = TWD per USD)
-      const twd = currency === 'USD' ? amount * rate : amount / rate;
-      const subtotal = twd + intl + proxy;
-      const afterInv = subtotal * invoice;
-      const total = afterInv + shipFee;
+      const base = jpy * rate;
+      const proxyFee = base * (proxyPct / 100);
+      const shopeeFee = (base + proxyFee) * (shopeePct / 100);
+      const total = base + proxyFee + shopeeFee + shipFee;
 
-      document.getElementById('bd1').textContent = fmt(twd);
-      document.getElementById('bd2').textContent = fmt(intl);
-      document.getElementById('bd3').textContent = fmt(proxy);
-      document.getElementById('bd5').textContent = fmt(afterInv);
-      document.getElementById('bd6').textContent = fmt(shipFee);
+      document.getElementById('bd-base').textContent = fmt(base);
+      document.getElementById('bd-proxy').textContent = fmt(proxyFee);
+      document.getElementById('bd-shopee').textContent = fmt(shopeeFee);
+      document.getElementById('bd-ship').textContent = fmt(shipFee);
       document.getElementById('bd-total').textContent = fmt(total);
 
-      document.getElementById('res-tw').textContent = fmt(total);
-      document.getElementById('res-ntd').textContent = fmt(total);
-      const sym = cfg.symbol;
-      const displayAmt = currency === 'USD'
-        ? `${sym}${amount.toLocaleString('zh-TW')}`
-        : `${sym}${Math.round(amount).toLocaleString('zh-TW')}`;
-      document.getElementById('res-tw-sub').textContent = `≈ ${displayAmt}`;
+      document.getElementById('res-total').textContent = fmt(total);
+      document.getElementById('res-base').textContent = fmt(base);
+      document.getElementById('res-sub').textContent = `≈ ¥${Math.round(jpy).toLocaleString('zh-TW')}`;
     }
 
     updateRateDisplay();
